@@ -1,0 +1,20 @@
+{
+  "name": "pwp-p-36339",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/carreira28/PWP-P-36339#readme",
+  "bugs": {
+    "url": "https://github.com/carreira28/PWP-P-36339/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carreira28/PWP-P-36339.git"
+  },
+  "license": "ISC",
+  "author": "Rodrigo",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
