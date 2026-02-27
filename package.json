@@ -20,8 +20,8 @@
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+  "start": "node server.js",
+  "dev": "nodemon server.js"
   },
   "dependencies": {
     "accepts": "^2.0.0",
