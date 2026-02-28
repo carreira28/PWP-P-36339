@@ -22,67 +22,67 @@ let movies = [
   { id: 2, title: "Interstellar", year: 2014 }
 ];
 
-app.get("/users", (req, res) => {
-  res.status(200).json({ data: users });
+app.get("/movies", (req, res) => {
+  res.status(200).json({ data: movies });
 });
 
-app.get("/users/:id", (req, res) => {
+app.get("/movies/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const user = users.find((u) => u.id === id);
+  const movie = movies.find((m) => m.id === id);
 
-  if (!user) {
-    return res.status(404).json({ message: "Utilizador não encontrado" });
+  if (!movie) {
+    return res.status(404).json({ message: "Filme não encontrado" });
   }
 
-  res.status(200).json({ data: user });
+  res.status(200).json({ data: movie });
 });
 
-app.post("/users", (req, res) => {
-  const { name, email } = req.body;
+app.post("/movies", (req, res) => {
+  const { title, year } = req.body;
 
   // Validação
-  if (!name || !email) {
-    return res.status(400).json({ message: "Campos 'name' e 'email' são obrigatórios" });
+  if (!title || !year) {
+    return res.status(400).json({ message: "Campos 'title' e 'year' são obrigatórios" });
   }
 
-  const newUser = {
-    id: users.length > 0 ? users[users.length - 1].id + 1 : 1,
-    name,
-    email
+  const newMovie = {
+    id: movies.length > 0 ? movies[movies.length - 1].id + 1 : 1,
+    title,
+    year
   };
 
-  users.push(newUser);
-  res.status(201).json({ data: newUser });
+  movies.push(newMovie);
+  res.status(201).json({ data: newMovie });
 });
 
-app.put("/users/:id", (req, res) => {
+app.put("/movies/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = users.findIndex((u) => u.id === id);
+  const index = movies.findIndex((m) => m.id === id);
 
   if (index === -1) {
-    return res.status(404).json({ message: "Utilizador não encontrado" });
+    return res.status(404).json({ message: "Filme não encontrado" });
   }
 
-  const { name, email } = req.body;
+  const { title, year } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ message: "Campos 'name' e 'email' são obrigatórios" });
+  if (!title || !year) {
+    return res.status(400).json({ message: "Campos 'title' e 'year' são obrigatórios" });
   }
 
-  users[index] = { id, name, email };
-  res.status(200).json({ data: users[index] });
+  movies[index] = { id, title, year };
+  res.status(200).json({ data: movies[index] });
 });
 
-app.delete("/users/:id", (req, res) => {
+app.delete("/movies/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = users.findIndex((u) => u.id === id);
+  const index = movies.findIndex((m) => m.id === id);
 
   if (index === -1) {
-    return res.status(404).json({ message: "Utilizador não encontrado" });
+    return res.status(404).json({ message: "Filme não encontrado" });
   }
 
-  users.splice(index, 1);
-  res.status(200).json({ message: "Utilizador eliminado com sucesso" });
+  movies.splice(index, 1);
+  res.status(200).json({ message: "Filme eliminado com sucesso" });
 });
 
 
