@@ -11,10 +11,15 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 const PORT = process.env.SERVER_PORT || 3000;
-//cjwndcj
-let users = [
+
+/*let users = [
   { id: 1, name: "Ana", email: "ana@email.com" },
   { id: 2, name: "João", email: "joao@email.com" }
+];*/
+
+let movies = [
+  { id: 1, title: "Inception", year: 2010 },
+  { id: 2, title: "Interstellar", year: 2014 }
 ];
 
 app.get("/users", (req, res) => {
