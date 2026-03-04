@@ -51,45 +51,45 @@ app.post("/tasks", (req, res) => {
     return res.status(400).json({ message: "Campos 'title' , 'completed' e 'priority' são obrigatórios" });
   }
 
-  const newTask = {
+  const newtasks = {
     id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
     title,
     completed,
     priority
   };
 
-  tasks.push(newTask);
-  res.status(201).json({ data: newTask });
+  tasks.push(newtasks);
+  res.status(201).json({ data: newtasks });
 });
 
-app.put("/movies/:id", (req, res) => {
+app.put("/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = movies.findIndex((m) => m.id === id);
+  const index = tasks.findIndex((t) => t.id === id);
 
   if (index === -1) {
-    return res.status(404).json({ message: "Filme não encontrado" });
+    return res.status(404).json({ message: "Tarefa não encontrado" });
   }
 
-  const { title, year } = req.body;
+  const { title, completed, priority } = req.body;
 
-  if (!title || !year) {
-    return res.status(400).json({ message: "Campos 'title' e 'year' são obrigatórios" });
+  if (!title || !completed || !priority) {
+    return res.status(400).json({ message: "Campos 'title' , 'completed' e 'priority' são obrigatórios" });
   }
 
-  movies[index] = { id, title, year };
-  res.status(200).json({ data: movies[index] });
+  tasks[index] = { id, title, completed, priority };
+  res.status(200).json({ data: tasks[index] });
 });
 
-app.delete("/movies/:id", (req, res) => {
+app.delete("/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = movies.findIndex((m) => m.id === id);
+  const index = tasks.findIndex((t) => t.id === id);
 
   if (index === -1) {
-    return res.status(404).json({ message: "Filme não encontrado" });
+    return res.status(404).json({ message: "Tarefa não encontrado" });
   }
 
-  movies.splice(index, 1);
-  res.status(200).json({ message: "Filme eliminado com sucesso" });
+  tasks.splice(index, 1);
+  res.status(200).json({ message: "Tarefa eliminado com sucesso" });
 });
 
 
