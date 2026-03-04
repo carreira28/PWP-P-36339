@@ -29,32 +29,37 @@ app.get("/tasks", (req, res) => {
 });
 
 app.get("/tasks/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const tasks = tasks.find((t) => t.id === id);
 
-  if (!tasks) {
-    return res.status(404).json({ message: "Tarefa não encontrado" });
-  }
+    const id = parseInt(req.params.id);
+    const task = tasks.find((t) => t.id === id);
 
-  res.status(200).json({ data: tasks });
+    if (!task) {
+      return res.status(404).json({ message: "Tarefa não encontrado" });
+    }
+
+    res.status(200).json({ data: task });
+
+    res.status(500).send(error.message)
+  
 });
 
 app.post("/tasks", (req, res) => {
   const { title, completed, priority } = req.body;
 
   // Validação
-  if (!title || !year) {
-    return res.status(400).json({ message: "Campos 'title' e 'year' são obrigatórios" });
+  if (!title || !completed || !priority) {
+    return res.status(400).json({ message: "Campos 'title' , 'completed' e 'priority' são obrigatórios" });
   }
 
-  const newMovie = {
-    id: movies.length > 0 ? movies[movies.length - 1].id + 1 : 1,
+  const newTask = {
+    id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
     title,
-    year
+    completed,
+    priority
   };
 
-  movies.push(newMovie);
-  res.status(201).json({ data: newMovie });
+  tasks.push(newTask);
+  res.status(201).json({ data: newTask });
 });
 
 app.put("/movies/:id", (req, res) => {
