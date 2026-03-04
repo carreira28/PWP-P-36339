@@ -12,33 +12,35 @@ app.use(morgan("dev"));
 
 const PORT = process.env.SERVER_PORT || 3000;
 
-/*let users = [
-  { id: 1, name: "Ana", email: "ana@email.com" },
-  { id: 2, name: "João", email: "joao@email.com" }
-];*/
 
-let movies = [
+
+/*let movies = [
   { id: 1, title: "Inception", year: 2010 },
   { id: 2, title: "Interstellar", year: 2014 }
+];*/
+
+let tasks = [
+  { id: 1, title: "Estudar Node.js", completed: false, priority: "high" },
+  { id: 2, title: "Fazer LAB-1", completed: true, priority: "medium" }
 ];
 
-app.get("/movies", (req, res) => {
-  res.status(200).json({ data: movies });
+app.get("/tasks", (req, res) => {
+  res.status(200).json({ data: tasks });
 });
 
-app.get("/movies/:id", (req, res) => {
+app.get("/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const movie = movies.find((m) => m.id === id);
+  const tasks = tasks.find((t) => t.id === id);
 
-  if (!movie) {
-    return res.status(404).json({ message: "Filme não encontrado" });
+  if (!tasks) {
+    return res.status(404).json({ message: "Tarefa não encontrado" });
   }
 
-  res.status(200).json({ data: movie });
+  res.status(200).json({ data: tasks });
 });
 
-app.post("/movies", (req, res) => {
-  const { title, year } = req.body;
+app.post("/tasks", (req, res) => {
+  const { title, completed, priority } = req.body;
 
   // Validação
   if (!title || !year) {
