@@ -44,7 +44,7 @@ app.get("/tasks/:id", (req, res) => {
   
 });
 
-
+//este de buscar por prioridade
 app.get("/tasks/: priority", (req, res) => {
   const priority = parseInt(req.params.id.priority);
   const task = tasks.find((t) => t.priority === priority);
