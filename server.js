@@ -45,18 +45,23 @@ app.get("/tasks/:id", (req, res) => {
 });
 
 //este de buscar por prioridade
-app.get("/tasks/: priority", (req, res) => {
-  const priority = parseInt(req.params.id.priority);
-  const task = tasks.find((t) => t.priority === priority);
+app.get("/tasks/:priority", (req, res) => {
+  try{
+    const filteredTasks = tasks.filter((t) => t.priority === level);
 
-  if(!task){
-    return res.status(404).json({ message: "Tarefa com essa prioridade não encontrada"});
+    if (filteredTasks.length === 0) {
+      return res.status(404).json({ 
+        message: `Nenhuma tarefa com prioridade '${level}' encontrada.` 
+      });
+    }
+
+    res.status(200).json({ data: filteredTasks });
+    
+  }catch (erro){
+
+res.status(500).json({ message: error.message });
+
   }
-
-  res.status(200).json({ data: task});
-
-  res.status(500).send(error.message)
-
 });
 
 app.post("/tasks", (req, res) => {
