@@ -44,6 +44,7 @@ app.get("/tasks/:id", (req, res) => {
   
 });
 
+//teste de filtrar por prioridades
 app.get("/tasks/priority/:priority", (req, res) => {
   try {
     const priorityTipo = req.params.priority;
@@ -53,7 +54,7 @@ app.get("/tasks/priority/:priority", (req, res) => {
       return res.status(404).json({ message: "Nenhuma tarefa com prioridade essa prioridade encontrada."});
     }
 
-    res.status(200).json({ data: filtrarTasks });
+    res.status(200).json(filtrarTasks);
 
   } catch (error) {
     return res.status(500).json({ message: error.message });
