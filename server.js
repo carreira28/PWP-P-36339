@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const { message } = require("statuses");
 
 const app = express();
 
@@ -41,6 +42,21 @@ app.get("/tasks/:id", (req, res) => {
 
     res.status(500).send(error.message)
   
+});
+
+
+app.get("/tasks/: priority", (req, res) => {
+  const priority = parseInt(req.params.id.priority);
+  const task = tasks.find((t) => t.priority === priority);
+
+  if(!task){
+    return res.status(404).json({ message: "Tarefa com essa prioridade não encontrada"});
+  }
+
+  res.status(200).json({ data: task});
+
+  res.status(500).send(error.message)
+
 });
 
 app.post("/tasks", (req, res) => {
