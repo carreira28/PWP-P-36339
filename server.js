@@ -45,7 +45,7 @@ app.get("/tasks/:id", (req, res) => {
 });
 
 //este de buscar por prioridade
-app.get("/tasks/:priority", (req, res) => {
+app.get("/tasks/priority/:level", (req, res) => {
   try{
     const filteredTasks = tasks.filter((t) => t.priority === level);
 
