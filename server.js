@@ -94,7 +94,21 @@ app.delete("/tasks/:id", (req, res) => {
   res.status(200).json({ message: "Tarefa eliminado com sucesso" });
 });
 
+app.get("/tasks/priority/:priority", (req, res) => {
+  try {
+    const priorityTipo = req.params.priority;
+    const filtrarTasks = tasks.filter((t) => t.priority === priorityTipo);
 
+    if (!filtrarTasks.length) {
+      return res.status(404).json({ message: "Nenhuma tarefa com essa prioridade encontrada."});
+    }
+
+    return res.status(200).json({data: filtrarTasks});
+ 
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
 
 // Rota não encontrada (404)
 app.use((req, res) => {
