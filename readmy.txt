@@ -1,0 +1,42 @@
+primeiro instalei o pgadmin, depois instalei (nexte em tudo),;
+abri o prisma, depois fiz create database, fiz login com github, depois dei nome;
+no prisma abri o Quikstart e copiei o codigo para o .env;
+
+executar isto:
+npm install prisma @prisma/client
+npx prisma init
+
+depois vai criara isto:
+/prisma
+   schema.prisma
+
+Depois vou ao prisma e abro o conected e copio o primeiro link;
+depois coloco isto no pgadmin:A imagem do Prisma Console explica tudo! O problema é que estás a tentar colocar a Connection String inteira num único campo, mas o pgAdmin exige que separes os ingredientes dessa "receita".
+
+A tua string é:
+postgres://233cf0dd...:sk_-ttHl...@db.prisma.io:5432/postgres?sslmode=require
+
+Aqui está como deves distribuir essa informação nos campos do pgAdmin:
+
+No separador "Connection":
+Host name/address: db.prisma.io
+(É apenas o que está entre o @ e os dois pontos do porto).
+
+Port: 5432
+
+Maintenance database: postgres
+(É o nome que aparece depois da barra / final).
+
+Username: 233cf0dd3106b3a308b8172349a1b39b6cee75e37861770faee6b297405109cd
+(Sim, este código gigante entre o // e os : é o teu utilizador).
+
+Password: sk_-ttHlgPqsbymczT7BppvR
+(O código que está entre os : e o @).
+
+
+
+Depis desconectei a base de dados do servidor fui a propriadades e alterarei o campo para (require);
+
+
+
+
