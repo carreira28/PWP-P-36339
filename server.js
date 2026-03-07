@@ -123,14 +123,16 @@ if (process.env.NODE_ENV !== "production") {
 // Para a Vercel
 module.exports = app;*/
 
-require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
 // 1. Importar o Prisma Client
 
-require("dotenv").config();
+if (process.env.NODE_ENV !== 'production') {
+  require("dotenv").config();
+}
 const { PrismaClient } = require("@prisma/client");
 const { withAccelerate } = require("@prisma/extension-accelerate");
 
@@ -147,7 +149,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
 // GET - Listar todas as tarefas da base de dados
 app.get("/tasks", async (req, res) => {
@@ -262,10 +264,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Erro interno do servidor" });
 });
 
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`✅ Servidor real a correr em http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`✅ Servidor a correr na porta ${PORT}`);
+});
 
 module.exports = app;
