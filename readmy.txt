@@ -56,4 +56,4 @@ Depois no packege.json temos de atualizar os scripts:
 
 
 
-No final fazemos cmmit e puch e podemos abri no versel a api;
+No final fazemos cmmit e push e podemos abri no versel a api;
