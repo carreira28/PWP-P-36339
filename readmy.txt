@@ -36,7 +36,24 @@ Password: sk_-ttHlgPqsbymczT7BppvR
 
 
 Depis desconectei a base de dados do servidor fui a propriadades e alterarei o campo para (require);
+Depois criei a base de dados no schema.prisma e dpois usei o comando (npx prisma db push);
+Logo de seguida alterei o server.js;
+Depois este comado (npm install @prisma/extension-accelerate), e depois este (npx prisma generate);
+
+Neste momento ja esta funcional com localhost, por isso temos de atulizar algumas coisar para colocar a correr no versel;
+
+Versel, tres pontos e depois Settings depois em Environment Variables vamos adicionar o DATABASE_URL e a SERVER_PORT defenidaa no .env;
+
+Depois no packege.json temos de atualizar os scripts:
+
+"scripts": {
+  "postinstall": "prisma generate",
+  "build": "prisma generate",
+  "start": "node server.js",
+  "dev": "nodemon server.js"
+}
 
 
 
 
+No final fazemos cmmit e puch e podemos abri no versel a api;
