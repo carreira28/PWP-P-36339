@@ -11,12 +11,8 @@ depois vai criara isto:
    schema.prisma
 
 Depois vou ao prisma e abro o conected e copio o primeiro link;
-depois coloco isto no pgadmin:A imagem do Prisma Console explica tudo! O problema é que estás a tentar colocar a Connection String inteira num único campo, mas o pgAdmin exige que separes os ingredientes dessa "receita".
+depois coloco isto no pgadmin:
 
-A tua string é:
-postgres://233cf0dd...:sk_-ttHl...@db.prisma.io:5432/postgres?sslmode=require
-
-Aqui está como deves distribuir essa informação nos campos do pgAdmin:
 
 No separador "Connection":
 Host name/address: db.prisma.io
