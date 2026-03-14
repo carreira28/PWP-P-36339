@@ -25,95 +25,98 @@ const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
 
-// GET - Listar todas as tarefas
-app.get("/tasks", asyncHandler(async (req, res) => {
-  const allTasks = await prisma.task.findMany();
-  res.status(200).json({ data: allTasks });
-}));
+// GET 
+app.get("/tasks", async (req, res) => {
+    const { completed } = req.query;
+    
+    const where = {};
+    if (completed !== undefined) {
+        where.completed = completed === "true";
+    }
 
+    const tasks = await prisma.task.findMany({ where });
+    res.status(200).json(tasks);
+});
 
-// GET - Buscar tarefa por ID
-app.get("/tasks/:id", asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
+// GET stats
+app.get("/tasks/stats", async (req, res) => {
+    const total = await prisma.task.count();
+    const completas = await prisma.task.count({ where: { completed: true } });
+    const pendentes = await prisma.task.count({ where: { completed: false } });
+    
+    res.status(200).json({ total, completas, pendentes });
+});
 
-  const task = await prisma.task.findUnique({
-    where: { id }
-  });
-
-  if (!task) {
-    return res.status(404).json({ message: "Tarefa não encontrada" });
-  }
-
-  res.status(200).json({ data: task });
-}));
-
-
-// POST - Criar tarefa
-app.post("/tasks", asyncHandler(async (req, res) => {
-  const { title, completed, priority } = req.body;
-
-  if (!title || priority === undefined) {
-    return res.status(400).json({
-      message: "Campos 'title' e 'priority' são obrigatórios"
+// GET por ID
+app.get("/tasks/:id", async (req, res) => {
+    const task = await prisma.task.findUnique({
+        where: { id: req.params.id },
     });
-  }
+    if (!task) return res.status(404).json({ message: "Tarefa não encontrada" });
+    res.status(200).json(task);
+});
 
-  const newTask = await prisma.task.create({
-    data: {
-      title,
-      completed: completed === true || completed === "true",
-      priority
+// POST
+app.post("/tasks", async (req, res) => {
+    const { title, description, priority } = req.body;
+
+
+    if (!title || !priority) {
+        return res.status(400).json({ message: "title e priority são obrigatórios" });
     }
-  });
 
-  res.status(201).json({ data: newTask });
-}));
-
-
-// PUT - Atualizar tarefa
-app.put("/tasks/:id", asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
-  const { title, completed, priority } = req.body;
-
-  const updatedTask = await prisma.task.update({
-    where: { id },
-    data: {
-      title,
-      completed: completed === true || completed === "true",
-      priority
+    const validPriorities = ["low", "medium", "high"];
+    if (!validPriorities.includes(priority)) {
+        return res.status(400).json({ message: "priority inválida" });
     }
-  });
 
-  res.status(200).json({ data: updatedTask });
-}));
+    const newTask = await prisma.task.create({
+        data: { title, description, priority },
+    });
+    res.status(201).json(newTask);
+});
 
+// PUT
+app.put("/tasks/:id", async (req, res) => {
+    try {
+        const { title, description, completed, priority } = req.body;
+        const updatedTask = await prisma.task.update({
+            where: { id: req.params.id },
+            data: { title, description, completed, priority },
+        });
+        res.status(200).json(updatedTask);
+    } catch (error) {
+        res.status(404).json({ message: "Tarefa não encontrada" });
+    }
+});
 
-// DELETE - Eliminar tarefa
-app.delete("/tasks/:id", asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id);
+// PATCH
+app.patch("/tasks/:id/toggle", async (req, res) => {
+    try {
+        const currentTask = await prisma.task.findUnique({ where: { id: req.params.id } });
+        if (!currentTask) return res.status(404).json({ message: "Não encontrada" });
 
-  await prisma.task.delete({
-    where: { id }
-  });
+        const updated = await prisma.task.update({
+            where: { id: req.params.id },
+            data: { completed: !currentTask.completed }
+        });
+        res.status(200).json(updated);
+    } catch (e) {
+        res.status(500).json({ message: "Erro ao alternar estado" });
+    }
+});
 
-  res.status(200).json({ message: "Tarefa eliminada com sucesso" });
-}));
-
-
-// GET - Filtrar por prioridade
-app.get("/tasks/priority/:priority", asyncHandler(async (req, res) => {
-  const priorityTipo = req.params.priority;
-
-  const filtrarTasks = await prisma.task.findMany({
-    where: { priority: priorityTipo }
-  });
-
-  if (filtrarTasks.length === 0) {
-    return res.status(404).json({ message: "Nenhuma tarefa encontrada." });
-  }
-
-  res.status(200).json({ data: filtrarTasks });
-}));
+// DELETE
+app.delete("/tasks/:id", async (req, res) => {
+    try {
+        await prisma.task.delete({
+            where: { id: req.params.id },
+        });
+        res.status(204).send();
+    } catch (e) {
+        res.status(404).json({ message: "Tarefa não existe" });
+    }
+});
 
 
 // 404
