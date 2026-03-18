@@ -21,14 +21,11 @@ app.use(morgan("dev"));
 
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
-const asyncHandler = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
 
-
-// GET 
+// GET - Listar todas as tarefas (com filtro opcional por completed)
 app.get("/tasks", async (req, res) => {
     const { completed } = req.query;
-    
+
     const where = {};
     if (completed !== undefined) {
         where.completed = completed === "true";
@@ -38,16 +35,16 @@ app.get("/tasks", async (req, res) => {
     res.status(200).json(tasks);
 });
 
-// GET stats
+// GET - Estatísticas das tarefas
 app.get("/tasks/stats", async (req, res) => {
     const total = await prisma.task.count();
     const completas = await prisma.task.count({ where: { completed: true } });
     const pendentes = await prisma.task.count({ where: { completed: false } });
-    
+
     res.status(200).json({ total, completas, pendentes });
 });
 
-// GET por ID
+// GET - Obter uma tarefa por ID
 app.get("/tasks/:id", async (req, res) => {
     const task = await prisma.task.findUnique({
         where: { id: req.params.id },
@@ -56,10 +53,9 @@ app.get("/tasks/:id", async (req, res) => {
     res.status(200).json(task);
 });
 
-// POST
+// POST - Criar tarefa
 app.post("/tasks", async (req, res) => {
     const { title, description, priority } = req.body;
-
 
     if (!title || !priority) {
         return res.status(400).json({ message: "title e priority são obrigatórios" });
@@ -67,7 +63,7 @@ app.post("/tasks", async (req, res) => {
 
     const validPriorities = ["low", "medium", "high"];
     if (!validPriorities.includes(priority)) {
-        return res.status(400).json({ message: "priority inválida" });
+        return res.status(400).json({ message: "priority inválida. Use: low, medium ou high" });
     }
 
     const newTask = await prisma.task.create({
@@ -76,10 +72,20 @@ app.post("/tasks", async (req, res) => {
     res.status(201).json(newTask);
 });
 
-// PUT
+// PUT - Atualizar tarefa
 app.put("/tasks/:id", async (req, res) => {
+    const { title, description, completed, priority } = req.body;
+
+    if (!title || !priority) {
+        return res.status(400).json({ message: "title e priority são obrigatórios" });
+    }
+
+    const validPriorities = ["low", "medium", "high"];
+    if (!validPriorities.includes(priority)) {
+        return res.status(400).json({ message: "priority inválida. Use: low, medium ou high" });
+    }
+
     try {
-        const { title, description, completed, priority } = req.body;
         const updatedTask = await prisma.task.update({
             where: { id: req.params.id },
             data: { title, description, completed, priority },
@@ -90,15 +96,15 @@ app.put("/tasks/:id", async (req, res) => {
     }
 });
 
-// PATCH
+// PATCH - Alternar estado completed
 app.patch("/tasks/:id/toggle", async (req, res) => {
     try {
         const currentTask = await prisma.task.findUnique({ where: { id: req.params.id } });
-        if (!currentTask) return res.status(404).json({ message: "Não encontrada" });
+        if (!currentTask) return res.status(404).json({ message: "Tarefa não encontrada" });
 
         const updated = await prisma.task.update({
             where: { id: req.params.id },
-            data: { completed: !currentTask.completed }
+            data: { completed: !currentTask.completed },
         });
         res.status(200).json(updated);
     } catch (e) {
@@ -106,7 +112,7 @@ app.patch("/tasks/:id/toggle", async (req, res) => {
     }
 });
 
-// DELETE
+// DELETE - Apagar tarefa
 app.delete("/tasks/:id", async (req, res) => {
     try {
         await prisma.task.delete({
@@ -119,20 +125,22 @@ app.delete("/tasks/:id", async (req, res) => {
 });
 
 
-// 404
+// 404 - Rota não encontrada
 app.use((req, res) => {
-  res.status(404).json({ message: "Rota não encontrada" });
+    res.status(404).json({ message: "Rota não encontrada" });
 });
-
 
 // Middleware global de erro
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: err.message || "Erro interno do servidor" });
+    console.error(err.stack);
+    res.status(500).json({ message: err.message || "Erro interno do servidor" });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Servidor a correr na porta ${PORT}`);
-});
+// Iniciar servidor apenas em desenvolvimento (local)
+if (process.env.NODE_ENV !== "production") {
+    app.listen(PORT, () => {
+        console.log(`✅ Servidor a correr em http://localhost:${PORT}`);
+    });
+}
 
 module.exports = app;
