@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -21,6 +23,57 @@ app.use(morgan("dev"));
 
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
+
+app.post("/auth/signup", async (req, res) => {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "Campos 'name', 'email' e 'password' são obrigatórios" });
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+        return res.status(409).json({ message: "Email já registado" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+        data: { name, email, password: hashedPassword },
+    });
+
+    res.status(201).json({
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+    });
+});
+
+app.post("/auth/signin", async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Campos 'email' e 'password' são obrigatórios" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        return res.status(401).json({ message: "Credenciais inválidas" });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+        return res.status(401).json({ message: "Credenciais inválidas" });
+    }
+
+    const token = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ token });
+});
 
 // GET - Listar todas as tarefas (com filtro opcional por completed)
 app.get("/tasks", async (req, res) => {
@@ -135,6 +188,22 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: err.message || "Erro interno do servidor" });
 });
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Token não fornecido" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: "Token inválido" });
+        }
+        req.user = user;
+        next();
+    });
+};
 
 // Iniciar servidor apenas em desenvolvimento (local)
 if (process.env.NODE_ENV !== "production") {
