@@ -23,6 +23,22 @@ app.use(morgan("dev"));
 
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Token não fornecido" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: "Token inválido" });
+        }
+        req.user = user;
+        next();
+    });
+};
 
 app.post("/auth/signup", async (req, res) => {
     const { name, email, password } = req.body;
@@ -76,7 +92,8 @@ app.post("/auth/signin", async (req, res) => {
 });
 
 // GET - Listar todas as tarefas (com filtro opcional por completed)
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", authenticateToken, async (req, res) => {
+    console.log(req.user);
     const { completed } = req.query;
 
     const where = {};
@@ -89,7 +106,8 @@ app.get("/tasks", async (req, res) => {
 });
 
 // GET - Estatísticas das tarefas
-app.get("/tasks/stats", async (req, res) => {
+app.get("/tasks/stats", authenticateToken, async (req, res) => {
+    console.log(req.user);
     const total = await prisma.task.count();
     const completas = await prisma.task.count({ where: { completed: true } });
     const pendentes = await prisma.task.count({ where: { completed: false } });
@@ -98,7 +116,8 @@ app.get("/tasks/stats", async (req, res) => {
 });
 
 // GET - Obter uma tarefa por ID
-app.get("/tasks/:id", async (req, res) => {
+app.get("/tasks/:id", authenticateToken, async (req, res) => {
+    console.log(req.user);
     const task = await prisma.task.findUnique({
         where: { id: req.params.id },
     });
@@ -107,7 +126,8 @@ app.get("/tasks/:id", async (req, res) => {
 });
 
 // POST - Criar tarefa
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", authenticateToken, async (req, res) => {
+    console.log(req.user);
     const { title, description, priority } = req.body;
 
     if (!title || !priority) {
@@ -126,7 +146,8 @@ app.post("/tasks", async (req, res) => {
 });
 
 // PUT - Atualizar tarefa
-app.put("/tasks/:id", async (req, res) => {
+app.put("/tasks/:id", authenticateToken, async (req, res) => {
+    console.log(req.user);
     const { title, description, completed, priority } = req.body;
 
     if (!title || !priority) {
@@ -150,7 +171,8 @@ app.put("/tasks/:id", async (req, res) => {
 });
 
 // PATCH - Alternar estado completed
-app.patch("/tasks/:id/toggle", async (req, res) => {
+app.patch("/tasks/:id/toggle", authenticateToken, async (req, res) => {
+    console.log(req.user);
     try {
         const currentTask = await prisma.task.findUnique({ where: { id: req.params.id } });
         if (!currentTask) return res.status(404).json({ message: "Tarefa não encontrada" });
@@ -166,7 +188,8 @@ app.patch("/tasks/:id/toggle", async (req, res) => {
 });
 
 // DELETE - Apagar tarefa
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", authenticateToken, async (req, res) => {
+    console.log(req.user);
     try {
         await prisma.task.delete({
             where: { id: req.params.id },
@@ -188,22 +211,6 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: err.message || "Erro interno do servidor" });
 });
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "Token não fornecido" });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: "Token inválido" });
-        }
-        req.user = user;
-        next();
-    });
-};
 
 // Iniciar servidor apenas em desenvolvimento (local)
 if (process.env.NODE_ENV !== "production") {
