@@ -105,6 +105,20 @@ app.get("/tasks", authenticateToken, async (req, res) => {
     res.status(200).json(tasks);
 });
 
+app.get("/auth/profile", authenticateToken, async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+    });
+    if (!user) return res.status(404).json({ message: "Utilizador não encontrado" });
+ 
+    res.status(200).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+    });
+});
+
 // GET - Estatísticas das tarefas
 app.get("/tasks/stats", authenticateToken, async (req, res) => {
     console.log(req.user);
