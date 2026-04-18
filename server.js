@@ -40,7 +40,7 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-app.post("/auth/signup", async (req, res) => {
+app.post("/api/auth/signup", async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -65,7 +65,7 @@ app.post("/auth/signup", async (req, res) => {
     });
 });
 
-app.post("/auth/signin", async (req, res) => {
+app.post("/api/auth/signin", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -92,7 +92,7 @@ app.post("/auth/signin", async (req, res) => {
 });
 
 // GET - Listar todas as tarefas (com filtro opcional por completed)
-app.get("/tasks", authenticateToken, async (req, res) => {
+app.get("/api/tasks", authenticateToken, async (req, res) => {
     console.log(req.user);
     const { completed } = req.query;
 
@@ -105,7 +105,7 @@ app.get("/tasks", authenticateToken, async (req, res) => {
     res.status(200).json(tasks);
 });
 
-app.get("/auth/profile", authenticateToken, async (req, res) => {
+app.get("/api/auth/profile", authenticateToken, async (req, res) => {
     const user = await prisma.user.findUnique({
         where: { id: req.user.id },
     });
@@ -120,7 +120,7 @@ app.get("/auth/profile", authenticateToken, async (req, res) => {
 });
 
 // GET - Estatísticas das tarefas
-app.get("/tasks/stats", authenticateToken, async (req, res) => {
+app.get("/api/tasks/stats", authenticateToken, async (req, res) => {
     console.log(req.user);
     const total = await prisma.task.count();
     const completas = await prisma.task.count({ where: { completed: true } });
@@ -130,7 +130,7 @@ app.get("/tasks/stats", authenticateToken, async (req, res) => {
 });
 
 // GET - Obter uma tarefa por ID
-app.get("/tasks/:id", authenticateToken, async (req, res) => {
+app.get("/api/tasks/:id", authenticateToken, async (req, res) => {
     console.log(req.user);
     const task = await prisma.task.findUnique({
         where: { id: req.params.id },
@@ -140,7 +140,7 @@ app.get("/tasks/:id", authenticateToken, async (req, res) => {
 });
 
 // POST - Criar tarefa
-app.post("/tasks", authenticateToken, async (req, res) => {
+app.post("/api/tasks", authenticateToken, async (req, res) => {
     console.log(req.user);
     const { title, description, priority } = req.body;
 
@@ -160,7 +160,7 @@ app.post("/tasks", authenticateToken, async (req, res) => {
 });
 
 // PUT - Atualizar tarefa
-app.put("/tasks/:id", authenticateToken, async (req, res) => {
+app.put("/api/tasks/:id", authenticateToken, async (req, res) => {
     console.log(req.user);
     const { title, description, completed, priority } = req.body;
 
@@ -185,7 +185,7 @@ app.put("/tasks/:id", authenticateToken, async (req, res) => {
 });
 
 // PATCH - Alternar estado completed
-app.patch("/tasks/:id/toggle", authenticateToken, async (req, res) => {
+app.patch("/api/tasks/:id/toggle", authenticateToken, async (req, res) => {
     console.log(req.user);
     try {
         const currentTask = await prisma.task.findUnique({ where: { id: req.params.id } });
@@ -202,7 +202,7 @@ app.patch("/tasks/:id/toggle", authenticateToken, async (req, res) => {
 });
 
 // DELETE - Apagar tarefa
-app.delete("/tasks/:id", authenticateToken, async (req, res) => {
+app.delete("/api/tasks/:id", authenticateToken, async (req, res) => {
     console.log(req.user);
     try {
         await prisma.task.delete({
