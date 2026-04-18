@@ -23,7 +23,8 @@
     "postinstall": "prisma generate",
     "build": "prisma generate",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "install": "npm install"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
