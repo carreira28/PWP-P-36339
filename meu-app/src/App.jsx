@@ -138,7 +138,6 @@ function Dashboard({ onLogout }) {
     <div className="app">
       {}
       <header>
-        <strong>✓ Tarefas</strong>
         <div>
           <span>Olá, {userName}</span>
         </div>
