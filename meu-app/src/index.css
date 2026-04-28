@@ -11,7 +11,7 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .stats { display: flex; gap: 1.5rem; margin-bottom: 1rem; font-size: .9rem; color: #555; }
 
 /* Formulário */
-.task-form { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
+.task-form { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; padding: 6%; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
 .form-btns { display: flex; gap: .5rem; }
 
 /* Filtros */
@@ -23,10 +23,10 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .task-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
 .task-list li { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; border: 1px solid #e0e0e0; border-radius: 8px; }
 .task-list li.done .title { text-decoration: line-through; color: #999; }
-.info { flex: 1; display: flex; flex-direction: column; gap: .1rem; }
+.info {display: flex; flex-direction: column; gap: .1rem; }
 .title { font-weight: 500; }
 .desc { font-size: .82rem; color: #777; }
-.priority { font-size: .78rem; }
+.priority { font-size: .78rem; color: red; }
 .actions { display: flex; gap: .4rem; }
 .empty { color: #aaa; font-size: .9rem; text-align: center; padding: 1rem 0; }
 

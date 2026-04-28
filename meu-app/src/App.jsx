@@ -153,9 +153,9 @@ function Dashboard({ onLogout }) {
 
       {}
       <form className="task-form" onSubmit={submit}>
-        <input placeholder="Título *" value={form.title}
+        <input placeholder="Título" value={form.title}
           onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
-        <input placeholder="Descrição (opcional)" value={form.description}
+        <input placeholder="Descrição" value={form.description}
           onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
         <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}>
           <option value="low">Baixa</option>
@@ -185,6 +185,7 @@ function Dashboard({ onLogout }) {
             <div className="info">
               <span className="title">{t.title}</span>
               {t.description && <span className="desc">{t.description}</span>}
+              <span>__________</span>
               <span className="priority">{PRIORITY[t.priority]}</span>
             </div>
             <div className="actions">
